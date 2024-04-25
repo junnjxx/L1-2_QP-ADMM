@@ -1,11 +1,3 @@
-% %%
-% n = 80;
-% k = 10;
-% A = randn(n);
-% A = A*A';
-% G = randn(n,k);
-% % Y = splitadmm20240118(A,G);
-% Y = splitadmm20240119(A,G);
 %%
 % % profile on
 % dataFolderPath = '/home/ubuntu/xlj/optimization/Datasets/MNIST_jpg_01/';
@@ -40,11 +32,22 @@ bandwidth = sum(sum(distanceMatrix))./(n^2 - n)
 % 计算原始的 大phi矩阵
 phi0 = exp(-distanceMatrix./bandwidth);
 [n , n] = size(phi0);
+%% 参数设置
+n_iter =3;
+iter = 1e5;
+beta = 1000;  % |X-Y|
+eta = 0.1 % SUM(Y)
+epsi = 1e-5;
 bs =3;
 nb = floor(n / bs)
 k = n
 n = nb
 G = phi0 * ones(k,n);
+current_time = datetime('now');
+fid = fopen('config.txt','a');
+fprintf(fid, '%s\n',current_time);
+fprintf(fid,'n_iter: %d,each_loop: %d, beta:%f,eta:%f,epsi:%f,batchsize:%d,sample_number:%d\n',n_iter,iter,beta,eta,epsi,bs,k);     
+fclose(fid);
 %%   根据一定的规则增大beta和eta
 A = phi0(1:(n*bs), 1:(n*bs)) ;
 A = 2.*A./bs./bs;
@@ -55,18 +58,21 @@ X = rand(n_,k_);
 Y = rand(n_,k_);
 sa_obj = [];
 sa_error = [];
-n_iter =3;
-iter = 1e5;
-beta = 1000;  % |X-Y|
-eta = 0.1 % SUM(Y)
 for i = 1:n_iter
-   
-    [X,Y, error_list] = splitadmm20240119(A,G,eta,beta,iter, X,Y);
+    
+    [X,Y, error_list,flag] = splitadmm20240119(A,G,eta,beta,i,iter, X,Y,epsi);
     
     has_non_zero_or_one = any(Y(:) ~= 0 & Y(:) ~= 1);
     if has_non_zero_or_one == 1
         eta = eta * 10;
     end
+    if flag ==1
+        fid = fopen('config.txt','a');
+        fprintf(fid,'success!');     
+        fclose(fid);
+        break;
+    end
+    
     threshold = 0.1; % 设置阈值
     % is_converged = check_convergence(saved_obj, threshold);
     

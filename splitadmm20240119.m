@@ -1,7 +1,6 @@
-function [X,Y,error_list] = splitadmm20240119(A,G,eta,beta,iter,X1,Y1)
-
+function [X,Y,error_list,flag] = splitadmm20240119(A,G,eta,beta,n_iter,iter,X1,Y1,epsi)
+flag = 0;
 [n,k] = size(G);
-epsi = 1e-5;
 en = ones(n,1);
 ek = ones(k,1);
 Lambda = zeros(n,k);
@@ -12,49 +11,67 @@ Y = Y1;
 %fprintf('%i\t%f\t%f\n',iter,norm(X-Y,'fro'),obj(X,Y))
 error_list = [];
 saved_obj = [];
-fprintf('%f,%f\n',beta,eta)
+fprintf('n_iter: %d,beta: %f,eta:%f\n',n_iter,beta,eta)
+AY_new = A*Y;
 for iter = 1:maxiter
 tic;
-beta_scale = beta * norm(X-Y,"fro")^2;
-eta_scale = eta * sum(Y,'all');
-obj_value = sum(Y.*(A*X),'all')/2+sum(G.*X,'all')+sum(Lambda.*(X-Y),'all');
-fprintf('%i,%e,%e,%e\n',iter,beta_scale,eta_scale,obj_value)
+if mod(iter, 100) == 0
+    beta_scale = beta * norm(X-Y,"fro")^2;
+    eta_scale = eta * sum(Y,'all');
+    obj_value = sum(Y.*(A*X),'all')/2+sum(G.*X,'all')+sum(Lambda.*(X-Y),'all');
+    fid = fopen('config.txt','a');
+    fprintf('n_ iter:%i,iter:%i,beta_scale:%e,eta_scale:%e,obj_value:%e\n',n_iter,iter,beta_scale,eta_scale,obj_value)
+    fclose(fid);
+end
 %update X
-X = Y-(Lambda+A*Y/2+G)/beta;
-B = X;
-%X = X-1/n*en*en'*X+1/k*(en-X*ek+1/n*en*en'*X*ek)*ek'; %计算时间久
-% 优化版
+AY = AY_new;
+X = Y-(Lambda+AY/2+G)/beta;
 eX = sum(X,1);
-eeX = repmat(eX,n,1);
-Xe = sum(X,2);
-X_p2 = 1/k*(en-Xe +1/n* sum(eeX,2)  );
-X = X-1/n  *  eeX  +  repmat(X_p2,1,k);
-fprintf('%i\t%f\t%f\n',iter,norm(X-Y,'fro'),obj(X,Y))
+X = X-eX/n+(1+sum(eX)/n-sum(X,2))/k;
 
 temp_Y = Y;
 
 %update Y
 Y_ = X+(Lambda-A*X/2)/beta;
-Y=rooth(-Y_,eta/(2*beta)).^2;
-Y = min(Y,1);
-Y=(Y.^2*beta/2-beta*Y.*Y_+eta*Y.^0.5<0).*Y;
+lamb = 2*eta/beta;
+Yindex = Y_>3/4*lamb^(2/3);
+y_ = Y_(Yindex);
+y = 2/3*y_.*(1+cos(2/3*pi-2/3*acos((lamb)/8*(y_/3).^(-1.5))));
+y((y-y_).^2+lamb*sqrt(y)-y_.^2>0) = 0;
+y(y>1) = 1;
+Y = zeros(n,k); 
+Y(Yindex) = y;
+AY_new = A * Y;
 
-%fprintf('%i\t%f\t%f\n',iter,norm(X-Y,'fro'),obj(X,Y))
-% saved_obj = [saved_obj obj(X,Y)];
+
 %updata Lambda
 Lambda = Lambda+beta*(X-Y);
 
 % 终止准则
 del_Y = temp_Y - Y;
-r_matrix = abs(-0.5 .* A * del_Y + beta .* del_Y);
+r_matrix = abs(0.5 .* AY_new - 0.5 .* AY + beta .* del_Y);
 r = max(r_matrix(:));
 XY = X-Y;
 d_XY = max(abs( XY(:)  ));
 error = max(r,d_XY) ;
+if mod(iter, 100) == 0
+    fid = fopen('config.txt','a');
+    fprintf('%i,%f,%f\n',iter,r,d_XY)
+    fclose(fid);
+end
 fprintf('%i,%f,%f\n',iter,r,d_XY)
 error_list = [error_list error ];
+if mod(iter,1000) == 0
+    folder_path = './save/';
+    if ~exist(folder_path, 'dir')
+        mkdir(folder_path);
+    end
+    filename = sprintf('%ssaved_Y_%d_%d.csv', folder_path, n_iter, iter);
+    csvwrite(filename, Y);
+end
 toc
 if error < epsi
+    flag =1;
     break;
 end
 end
