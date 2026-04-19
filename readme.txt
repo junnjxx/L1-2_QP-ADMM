@@ -1,9 +1,17 @@
 CONVERGENCE-GUARANTEED ALGORITHMS FOR L1/2-REGULARIZED QUADRATIC PROGRAMS 
 WITH ASSIGNMENT CONSTRAINTS
+LIJUN XIE RAN GU XIN LIN
 ===============================================================================================
 
-This repository contains the MATLAB and Python implementations for the algorithms 
-described in the paper. The code is organized into two main directories: 
+## Purpose of this Repository
+This repository contains the source code, and configuration files used to generate the numerical results presented in the paper mentioned above.
+
+The primary purpose of this repository is to ensure **reproducibility** of the computational experiments. Specifically, this code allows readers to:
+1. Reproduce all tables and figures shown in the manuscript.
+2. Verify the implementation of the proposed  L1/2-regularized quadratic programming ADMM algorithm.
+
+It contains the MATLAB and Python implementations for the algorithms 
+described in the paper and is organized into two main directories: 
 one for synthetic quadratic experiments (MATLAB) and another for 
 real-world deep learning batch selection experiments (Python/MATLAB hybrid).
 
@@ -72,3 +80,4 @@ B. For Real-World Experiments (Deep Learning Batch Selection):
       - Run the training script: 'dl_models.py' 
       - The script will load the pre-computed optimal batches and train the models.
 
+A snapshot of this repository is provided as supplementary material for long-term archival.
