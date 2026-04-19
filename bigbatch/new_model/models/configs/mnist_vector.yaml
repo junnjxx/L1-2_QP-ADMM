@@ -1,0 +1,25 @@
+experiment_info:
+  type: 'Vector'
+  cuda_visible_devices: "1"  # 用于指定可见的GPU设备
+  device_type: "cuda"  # 指定设备类型，可能是"cuda"或"cpu"
+  bandwidth_type: "mean"  # 可能的带宽类型
+
+model_parameters:
+  eta: 0.001 # 模型中的eta参数
+  beta: 10000  # 模型中的beta参数
+  batch_size: 250  # 批次大小
+  eta_incr: 10  # eta增加的幅度
+  epsi: 1e-3  # 精度参数，应该是浮点数
+  n_iter: 1  # 总迭代次数
+  iter_per_loop: 2e6  # 每个循环的迭代次数
+
+output_files:
+  save_directory: "./save_0105_vector_cifar10_50000_250_HOG/"  # 保存目录的路径
+  middle_info_save_dir: "middle_info"  # 中间信息保存的目录名
+  save_X_Y: "matrix_X"  # 保存X和Y结果的文件名
+  final_Y_save_dir: "final_Y.csv"  # 最终Y结果的保存目录
+  sample_order_save_dir: "sample_order_vector_1125_cifar10_50000_250_HOG.txt"  # 样本顺序保存的目录
+
+data_info:
+  data_size: 50000  # 数据集大小
+  dataset_path: "/home/ubuntu/xlj/opt/bigbatch/cifar10_datasets/train_gray.txt"  # 数据集路径

@@ -1,0 +1,43 @@
+experiment_info:
+  type: 'Vector'
+  cuda_visible_devices: "1"  # 用于指定可见的GPU设备
+  device_type: "cuda"  # 指定设备类型，可能是"cuda"或"cpu"
+  bandwidth_type: "mean"  # 可能的带宽类型
+
+model_parameters:
+  eta: 0.001 # 模型中的eta参数
+  beta: 10000  # 模型中的beta参数
+  batch_size: 250  # 批次大小
+  eta_incr: 10  # eta增加的幅度
+  epsi: 1e-3  # 精度参数，应该是浮点数
+  n_iter: 1  # 总迭代次数
+  iter_per_loop: 2e6  # 每个循环的迭代次数
+
+output_files:
+  save_directory: "./save_0105_vector_cifar10_50000_250_HOG/"  # 保存目录的路径
+  middle_info_save_dir: "middle_info"  # 中间信息保存的目录名
+  save_X_Y: "matrix_X"  # 保存X和Y结果的文件名
+  final_Y_save_dir: "final_Y.csv"  # 最终Y结果的保存目录
+  sample_order_save_dir: "sample_order_vector_1125_cifar10_50000_250_HOG.txt"  # 样本顺序保存的目录
+
+data_info:
+  data_size: 50000  # 数据集大小
+  dataset_path: "/home/ubuntu/xlj/opt/bigbatch/cifar10_datasets/train_gray.txt"  # 数据集路径Batch:0Iteration 0: iter=1000, r=27.79901695251465, d_XY=9.298324584960938e-06, y_max=1.0
+Total time: 149.77 seconds
+Batch:2Iteration 0: iter=1000, r=38.13551330566406, d_XY=1.6536563634872437e-05, y_max=1.0
+Total time: 173.40 seconds
+Batch:3Iteration 0: iter=1000, r=41.016414642333984, d_XY=3.058137372136116e-05, y_max=1.0
+Total time: 170.53 seconds
+Batch:3Iteration 0: iter=2000, r=2.924484968185425, d_XY=1.8477439880371094e-05, y_max=1.0
+Total time: 340.10 seconds
+Batch:4Iteration 0: iter=1000, r=39.79118347167969, d_XY=2.0742416381835938e-05, y_max=1.0
+Total time: 169.77 seconds
+Batch:5Iteration 0: iter=1000, r=27.43315887451172, d_XY=1.519918441772461e-05, y_max=1.0
+Total time: 168.77 seconds
+Batch:6Iteration 0: iter=1000, r=7.738345623016357, d_XY=0.00016566971316933632, y_max=1.0
+Total time: 167.58 seconds
+Batch:34Iteration 0: iter=1000, r=161.5563201904297, d_XY=0.00022730231285095215, y_max=1.0
+Total time: 124.14 seconds
+Start time: 2025-01-05 22:24:20
+End time: 2025-01-06 00:34:24
+Total time: 7803.94 seconds
